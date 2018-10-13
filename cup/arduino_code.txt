@@ -1,0 +1,49 @@
+#include <OneWire.h>
+
+OneWire  ds(2);
+
+void setup(void) {
+  Serial.begin(115200);
+}
+
+void loop(void) {
+  byte present = 0;
+  byte data[12];
+  byte addr[8];
+  float celsius;
+
+  if ( !ds.search(addr)) {
+    ds.reset_search();
+    return;
+  }
+
+
+  ds.reset();
+  ds.select(addr);
+  ds.write(0x44);
+
+  delay(700);
+
+
+  present = ds.reset();
+  ds.select(addr);
+  ds.write(0xBE);
+
+
+  for (byte i = 0; i < 9; i++) {
+    data[i] = ds.read();
+  }
+
+
+
+  int16_t raw = (data[1] << 8) | data[0];
+  byte cfg = (data[4] & 0x60);
+
+  if (cfg == 0x00) raw = raw & ~7;
+  else if (cfg == 0x20) raw = raw & ~3;
+  else if (cfg == 0x40) raw = raw & ~1;
+
+  //Temperature check
+  //Serial.println((float)raw / 16.0);
+  Serial.write((int)((float)raw / 16.0));
+}
