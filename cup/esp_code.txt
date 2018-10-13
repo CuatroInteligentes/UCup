@@ -1,0 +1,98 @@
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+
+int in;
+int temp;
+bool watching_temp = 0;                                                //temp check part
+
+//SETTING WIFI SSID & PASSWORD, STARTING THE SERVER////////////////////////
+
+const char* ssid = "medi@MAX";
+const char* password = "alba12tros";
+
+ESP8266WebServer server(80);
+
+//DECLARING SOME FUNCTIONS/////////////////////////////////////////////////
+
+void handleRoot() {
+  server.send(200, "text/plain", "Welcome to the test version of server");
+  watching_temp = 0;                                                //temp check part
+}
+
+//MAYBE WILL BE REMOVED BECAUSE OF USELESSNESS
+
+void handleNotFound() {
+  watching_temp = 0;                                                //temp check part
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  server.send(404, "text/plain", message);
+}
+
+void setup(void) {
+//CHECK  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.begin(115200);
+//CHECK  Serial.println("");
+
+//WAIT FOR CONNECTION//////////////////////////////////////////////////////
+
+/*CHECK  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }*/
+
+//WIFI CONNECTION INFO/////////////////////////////////////////////////////
+
+/*CHECK  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  if (MDNS.begin("esp8266")) {
+    Serial.println("MDNS responder started");
+  }*/
+
+//MAIN SERVER FUNCTIONS WILL BE SET HERE///////////////////////////////////
+
+  server.on("/", handleRoot);
+
+/*  server.on("/inline", []() {
+    server.send(200, "text/plain", "this works as well");
+  });*/
+
+    server.on("/temp", []() {                                                //temp check part
+        watching_temp = 1;                                                       //temp check part
+      });                                                                        //temp check part
+
+  server.onNotFound(handleNotFound);
+
+  server.begin();
+//CHECK  Serial.println("HTTP server started");
+}
+
+
+
+void loop(void) {
+  server.handleClient();
+
+
+      if ((Serial.available() > 0)&&(watching_temp)){
+        in = Serial.read();
+        server.send(200, "text/plain", "Temperature now is " + String(in));
+  }
+
+
+}
