@@ -5,7 +5,7 @@
 
 int in;
 int temp;
-bool watching_temp = 0;                                                //temp check part
+bool watching_temp = 0;                                                          //temp check part
 
 //SETTING WIFI SSID & PASSWORD, STARTING THE SERVER////////////////////////
 
@@ -18,13 +18,13 @@ ESP8266WebServer server(80);
 
 void handleRoot() {
   server.send(200, "text/plain", "Welcome to the test version of server");
-  watching_temp = 0;                                                //temp check part
+  watching_temp = 0;                                                             //temp check part
 }
 
-//MAYBE WILL BE REMOVED BECAUSE OF USELESSNESS
+//MAYBE WILL BE REMOVED BECAUSE OF USELESSNESS                                                               !!!
 
 void handleNotFound() {
-  watching_temp = 0;                                                //temp check part
+  watching_temp = 0;                                                             //temp check part
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -40,27 +40,31 @@ void handleNotFound() {
 }
 
 void setup(void) {
-//CHECK  Serial.begin(115200);
+  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.begin(115200);
-//CHECK  Serial.println("");
+  Serial.println('\n');
 
 //WAIT FOR CONNECTION//////////////////////////////////////////////////////
 
-/*CHECK  while (WiFi.status() != WL_CONNECTED) {
+
+while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
-  }*/
+    Serial.println("nwc");
+  }
 
 //WIFI CONNECTION INFO/////////////////////////////////////////////////////
 
-/*CHECK  Serial.println("");
+/*//CHECK
+  Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.localIP());*/
 
+  Serial.println("wic");
+
+/*//CHECK
   if (MDNS.begin("esp8266")) {
     Serial.println("MDNS responder started");
   }*/
@@ -69,11 +73,11 @@ void setup(void) {
 
   server.on("/", handleRoot);
 
-/*  server.on("/inline", []() {
+/*  server.on("/inline", []() {                                                                                                inline example
     server.send(200, "text/plain", "this works as well");
   });*/
 
-    server.on("/temp", []() {                                                //temp check part
+    server.on("/temp", []() {                                                    //temp check part
         watching_temp = 1;                                                       //temp check part
       });                                                                        //temp check part
 
