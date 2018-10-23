@@ -2,8 +2,9 @@
 
 //VARIABLES ARE DECLARED HERE////////////////////////////////////////
 
-byte wifi_led = 13;
-//byte temp_led = ;
+byte power_led = 2;
+byte wifi_led = 8;
+byte temp_led = 12;
 
 bool is_wifi = 0;
 boolean new_data = false;
@@ -44,8 +45,12 @@ void setup(void) {
   Serial.begin(115200);
 
   //Wifi led
+  pinMode(power_led, OUTPUT);
+  digitalWrite(power_led, HIGH);
   pinMode(wifi_led, OUTPUT);
   digitalWrite(wifi_led, LOW);
+  pinMode(temp_led, OUTPUT);
+  digitalWrite(temp_led, LOW);
 
 }
 
