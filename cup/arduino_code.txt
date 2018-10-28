@@ -58,66 +58,71 @@ void setup(void) {
 
 void loop(void) {
 
-//COMMAND DECLARING PART/////////////////////////////////////////////
+  //COMMAND DECLARING PART/////////////////////////////////////////////
 
   rec();
 
- if (!is_wifi){
-  if (rec_dat[0] == 'n' && rec_dat[1] == 'w' && rec_dat[2] == 'c') {
-    digitalWrite(wifi_led, HIGH);
-    delay(100);
-    digitalWrite(wifi_led, LOW);
-    new_data = false;
+  if (!is_wifi) {
+    if (rec_dat[0] == 'n' && rec_dat[1] == 'w' && rec_dat[2] == 'c') {
+      digitalWrite(wifi_led, HIGH);
+      delay(100);
+      digitalWrite(wifi_led, LOW);
+      new_data = false;
+    }
+
+    if (rec_dat[0] == 'w' && rec_dat[1] == 'i' && rec_dat[2] == 'c') {
+      digitalWrite(wifi_led, HIGH);
+      is_wifi = 1;
+      new_data = false;
+    }
+
+    if (rec_dat[0] == 't' && rec_dat[1] == 'i' && rec_dat[2] == 'c') {
+      digitalWrite(temp_led, HIGH);
+      new_data = false;
+    }
   }
 
-  if (rec_dat[0] == 'w' && rec_dat[1] == 'i' && rec_dat[2] == 'c') {
-    digitalWrite(wifi_led, HIGH);
-    is_wifi = 1;
-    new_data = false;
+  //TEMPERATURE PROCESSING PART////////////////////////////////////////
+
+  byte present = 0;
+  byte data[12];
+  byte addr[8];
+  float celsius;
+
+  if ( !ds.search(addr)) {
+    ds.reset_search();
+    return;
   }
-}
-
-//TEMPERATURE PROCESSING PART////////////////////////////////////////
-
-byte present = 0;
-byte data[12];
-byte addr[8];
-float celsius;
-
-if ( !ds.search(addr)) {
-  ds.reset_search();
-  return;
-}
 
 
-ds.reset();
-ds.select(addr);
-ds.write(0x44);
+  ds.reset();
+  ds.select(addr);
+  ds.write(0x44);
 
-delay(700);
-
-
-present = ds.reset();
-ds.select(addr);
-ds.write(0xBE);
+  delay(700);
 
 
-for (byte i = 0; i < 9; i++) {
-  data[i] = ds.read();
-}
+  present = ds.reset();
+  ds.select(addr);
+  ds.write(0xBE);
+
+
+  for (byte i = 0; i < 9; i++) {
+    data[i] = ds.read();
+  }
 
 
 
-int16_t raw = (data[1] << 8) | data[0];
-byte cfg = (data[4] & 0x60);
+  int16_t raw = (data[1] << 8) | data[0];
+  byte cfg = (data[4] & 0x60);
 
-if (cfg == 0x00) raw = raw & ~7;
-else if (cfg == 0x20) raw = raw & ~3;
-else if (cfg == 0x40) raw = raw & ~1;
+  if (cfg == 0x00) raw = raw & ~7;
+  else if (cfg == 0x20) raw = raw & ~3;
+  else if (cfg == 0x40) raw = raw & ~1;
 
-//Temperature check
-//Serial.println((float)raw / 16.0);
+  //Temperature check
+  //Serial.println((float)raw / 16.0);
 
-byte temp = (byte)(raw / 16.0);
-if ((temp >= 0) && (temp <= 100)) Serial.write(temp);
+  byte temp = (byte)(raw / 16.0);
+  if ((temp >= 0) && (temp <= 100)) Serial.write(temp);
 }

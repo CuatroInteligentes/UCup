@@ -1,0 +1,61 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
+
+ESP8266WiFiMulti WiFiMulti;
+
+String comfy_temp = "";
+byte temp = 255;
+bool alerted = 0;
+
+//Super post function is declared here
+
+void setup() {
+
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFiMulti.addAP("medi@MAX", "alba12tros");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("nwc");
+  }
+
+  Serial.println("wic");
+
+}
+
+void loop() {
+
+  HTTPClient http;
+
+  http.begin("http://192.168.0.104/bufera.txt");
+  http.addHeader("Content-Type", "text/plain");
+
+  int httpCode = http.GET();
+
+  if (httpCode > 0) {
+    if (httpCode == HTTP_CODE_OK) {
+      String payload = http.getString();
+      if (payload != comfy_temp) {
+        comfy_temp = payload;
+      }
+    }
+    
+    http.end();
+  }
+
+
+  if (Serial.available() > 0) {
+    temp = Serial.read();
+  }
+
+  if ((temp <= atoi(&comfy_temp[0])) && (!alerted)) {
+ /*CHECK   Serial.println(temp);
+    Serial.println(atoi(&comfy_temp[0]));*/
+    Serial.println("tic");
+    //Super post function is called here
+    alerted = 1;
+  }
+
+}
