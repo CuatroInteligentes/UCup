@@ -8,16 +8,18 @@ String comfy_temp = "";
 byte temp = 255;
 bool alerted = 0;
 
-//Super post function is declared here
+void check_t();
+void send_alert();
 
 void setup() {
 
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP("medi@MAX", "alba12tros");
+  //WiFiMulti.addAP("media@MAX", "alba12tros");
+  WiFiMulti.addAP("DESKTOP-BAKHM65 1635", "3\4qY520");
   Serial.println("");
 
-delay(3000);
+  delay(2500);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -30,9 +32,27 @@ delay(3000);
 
 void loop() {
 
+  check_t();
+
+  if (Serial.available() > 0)   temp = Serial.read();
+
+  if ((temp <= atoi(&comfy_temp[0])) && (!alerted)) {
+    //Serial.println(temp);
+    //Serial.println(atoi(&comfy_temp[0]));
+    Serial.println("tic");
+    send_alert();
+    alerted = 1;
+  }
+
+}
+
+//FUNCTIONS AND ETC///////////////////////////////////////////
+
+void check_t() {
+
   HTTPClient http;
 
-  http.begin("http://192.168.0.104/bufera.txt");
+  http.begin("http://5c833cf8.ngrok.io/buf.txt");
   http.addHeader("Content-Type", "text/plain");
 
   int httpCode = http.GET();
@@ -44,21 +64,29 @@ void loop() {
         comfy_temp = payload;
       }
     }
-    
-    http.end();
   }
+  
+  http.end();
+}
 
 
-  if (Serial.available() > 0) {
-    temp = Serial.read();
-  }
 
-  if ((temp <= atoi(&comfy_temp[0])) && (!alerted)) {
- /*CHECK   Serial.println(temp);
-    Serial.println(atoi(&comfy_temp[0]));*/
-    Serial.println("tic");
-    //Super post function is called here
-    alerted = 1;
-  }
+void send_alert() {
+
+  HTTPClient http;
+
+  http.begin("http://5c833cf8.ngrok.io/bot.php");
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  http.POST("ready=yes");
+/*  int httpCode = http.POST("ready=yes");
+  if (httpCode > 0) {
+    Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+    http.writeToStream(&Serial);
+
+  } else Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());//*/
+
+  http.end();
+
 
 }

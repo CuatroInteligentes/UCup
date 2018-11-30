@@ -2,9 +2,9 @@
 
 //VARIABLES ARE DECLARED HERE////////////////////////////////////////
 
-//byte power_led = ;
-byte wifi_led = 5;
-byte temp_led = 12;
+byte power_led = 5;
+byte wifi_led = 11;
+byte temp_led = 7;
 
 bool is_wifi = 0;
 boolean new_data = false;
@@ -15,6 +15,8 @@ char rec_dat[num_ch];   // an array to store the received data
 OneWire  ds(2);
 
 //FUNCTIONS ARE DECLARED HERE////////////////////////////////////////
+
+//void(* resetFunc) (void) = 0;
 
 void rec() {
   static byte ndx = 0;
@@ -42,15 +44,18 @@ void rec() {
 //SETUP//////////////////////////////////////////////////////////////
 
 void setup(void) {
+  
   Serial.begin(115200);
 
   //Wifi led
-  //  pinMode(power_led, OUTPUT);
-  //  digitalWrite(power_led, HIGH);
+  pinMode(power_led, OUTPUT);
+  digitalWrite(power_led, HIGH);
   pinMode(wifi_led, OUTPUT);
   digitalWrite(wifi_led, LOW);
   pinMode(temp_led, OUTPUT);
   digitalWrite(temp_led, LOW);
+
+//  resetFunc();
 
 }
 
@@ -65,7 +70,7 @@ void loop(void) {
   if (!is_wifi) {
     if (rec_dat[0] == 'n' && rec_dat[1] == 'w' && rec_dat[2] == 'c') {
       digitalWrite(wifi_led, HIGH);
-      delay(100);
+      delay(50);
       digitalWrite(wifi_led, LOW);
       new_data = false;
     }
