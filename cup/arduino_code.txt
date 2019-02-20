@@ -70,8 +70,9 @@ void loop(void) {
   if (!is_wifi) {
     if (rec_dat[0] == 'n' && rec_dat[1] == 'w' && rec_dat[2] == 'c') {
       digitalWrite(wifi_led, HIGH);
-      delay(50);
+      delay(500);
       digitalWrite(wifi_led, LOW);
+      delay(500);
       new_data = false;
     }
 

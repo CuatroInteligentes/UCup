@@ -1,8 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
-
-ESP8266WiFiMulti WiFiMulti;
 
 String comfy_temp = "";
 byte temp = 255;
@@ -15,8 +12,7 @@ void setup() {
 
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
-  //WiFiMulti.addAP("media@MAX", "alba12tros");
-  WiFiMulti.addAP("DESKTOP-BAKHM65 1635", "3\4qY520");
+  WiFi.begin("APforME", "zzz100200");
   Serial.println("");
 
   delay(2500);
@@ -52,7 +48,7 @@ void check_t() {
 
   HTTPClient http;
 
-  http.begin("http://5c833cf8.ngrok.io/buf.txt");
+  http.begin("http://.ngrok.io/buf.txt");
   http.addHeader("Content-Type", "text/plain");
 
   int httpCode = http.GET();
@@ -75,7 +71,7 @@ void send_alert() {
 
   HTTPClient http;
 
-  http.begin("http://5c833cf8.ngrok.io/bot.php");
+  http.begin("http://.ngrok.io/bot.php");
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
   http.POST("ready=yes");
@@ -87,6 +83,5 @@ void send_alert() {
   } else Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());//*/
 
   http.end();
-
 
 }
